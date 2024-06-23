@@ -10,7 +10,7 @@ const IBMPlex = IBM_Plex_Sans({ subsets: ["latin"], weight:['400', '500', '600',
  });
 
 export const metadata: Metadata = {
-  title: "Imaginify",
+  title: "PixelGenie",
   description: "AI-powered image generator",
 };
 
