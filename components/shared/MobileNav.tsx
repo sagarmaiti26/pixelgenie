@@ -54,7 +54,7 @@ function MobileNav() {
                       <li
                         className={`${
                           isActive && "gradient-text"
-                        } p-18 flex whitespace-nowrap text-dark-700`}
+                        } p-18 flex whitespace-nowrap text-gray-800`}
                         key={link.route}
                       >
                         <Link

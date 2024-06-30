@@ -36,8 +36,8 @@ const Sidebar = () => {
                     key={link.route}
                     className={`sidebar-nav_element group ${
                       isActive
-                        ? "bg-purple-gradient text-white"
-                        : "text-gray-700"
+                        ? "bg-purple-gradient text-gray-900"
+                        : "text-gray-600"
                     }`}
                   >
                     <Link className="sidebar-link" href={link.route}>
@@ -46,7 +46,7 @@ const Sidebar = () => {
                         alt="logo"
                         width={24}
                         height={24}
-                        className={`${isActive && "brightness-200"}`}
+                        className={`${isActive && "brightness-50"}`}
                       />
                       {link.label}
                     </Link>
@@ -64,7 +64,7 @@ const Sidebar = () => {
                     key={link.route}
                     className={`sidebar-nav_element group ${
                       isActive
-                        ? "bg-purple-gradient text-white"
+                        ? "bg-purple-gradient text-gray-900"
                         : "text-gray-700"
                     }`}
                   >
@@ -89,7 +89,7 @@ const Sidebar = () => {
 
           {/* signed out */}
           <SignedOut>
-            <Button asChild className="button bg-purple-gradient bg-cover">
+            <Button asChild className="button bg-purple-gradient bg-cover text-gray-800">
               <Link href="/sign-in">Login</Link>
             </Button>
           </SignedOut>
