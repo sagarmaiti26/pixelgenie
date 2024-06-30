@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../../../../../components/shared/Header";
 import { transformationTypes } from "../../../../../constants";
 import TransformationForm from "../../../../../components/shared/TransformationForm";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { getUserById } from "../../../../../lib/actions/user.actions";
 import { redirect } from "next/navigation";
 
