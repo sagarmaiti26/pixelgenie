@@ -1,4 +1,4 @@
-# PixelGenie AI SaaS Application
+# PixelGenie : An AI SaaS Application
 
 ## Overview
 
@@ -10,7 +10,7 @@ Welcome to the AI Image Manipulation SaaS project. This platform provides users 
 - **Generative Fill**: Fill missing parts of an image using AI-powered generative models.
 - **Object Remove**: Remove unwanted objects from images with precision.
 - **Object Recolor**: Change the colors of objects within images effectively.
-- **Object Remove**: Remove the background of the objects.
+- **Background Remove**: Remove the background of the objects.
 
 ## Tech Stack
 
