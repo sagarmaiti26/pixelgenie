@@ -10,6 +10,7 @@ Welcome to the AI Image Manipulation SaaS project. This platform provides users 
 - **Generative Fill**: Fill missing parts of an image using AI-powered generative models.
 - **Object Remove**: Remove unwanted objects from images with precision.
 - **Object Recolor**: Change the colors of objects within images effectively.
+- **Object Remove**: Remove the background of the objects.
 
 ## Tech Stack
 
@@ -51,13 +52,20 @@ yarn install
 Create a `.env.local` file in the root directory and add the following environment variables:
 
 ```env
-NEXT_PUBLIC_CLERK_FRONTEND_API=your_clerk_frontend_api
-CLERK_API_KEY=your_clerk_api_key
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY=your_stripe_public_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+MONGODB_URL=your_database_url
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+WEBHOOK_SECRET=clerk_webhook_secret
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_secret_webhook
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_public_key
 ```
 
 ### Run the Application
