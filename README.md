@@ -1,4 +1,4 @@
-# AI Image Manipulation SaaS
+# PixelGenie AI SaaS Application
 
 ## Overview
 
