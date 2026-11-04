@@ -30,7 +30,7 @@ import {
   transformationTypes,
 } from "../../constants";
 import { CustomField } from "./CustomField";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "../../lib/utils";
 import { updateCredits } from "../../lib/actions/user.actions";
 import MediaUploader from "./MediaUploader";
@@ -79,6 +79,7 @@ const TransformationForm = ({
           publicId: data?.publicId,
         }
       : defaultValues;
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -151,41 +152,54 @@ const TransformationForm = ({
     setIsSubmitting(false);
   }
 
-  const onSelectFieldHandler = (
-    value: string,
-    onChangeField: (value: string) => void
-  ) => {
-    const imageSize = aspectRatioOptions[value as AspectRatioKey];
+  const onSelectFieldHandler = useCallback(
+    (value: string, onChangeField: (value: string) => void) => {
+      const imageSize = aspectRatioOptions[value as AspectRatioKey];
 
-    setImage((prevState: any) => ({
-      ...prevState,
-      aspectRatio: imageSize.aspectRatio,
-      width: imageSize.width,
-      height: imageSize.height,
-    }));
-
-    setNewTransformation(transformationType.config);
-
-    return onChangeField(value);
-  };
-
-  const onInputChangeHandler = (
-    fieldName: string,
-    value: string,
-    type: string,
-    onChangeField: (value: string) => void
-  ) => {
-    debounce(() => {
-      setNewTransformation((prevState: any) => ({
+      setImage((prevState: any) => ({
         ...prevState,
-        [type]: {
-          ...prevState?.[type],
-          [fieldName === "prompt" ? "prompt" : "to"]: value,
-        },
+        aspectRatio: imageSize.aspectRatio,
+        width: imageSize.width,
+        height: imageSize.height,
       }));
-    }, 1000)();
-    return onChangeField(value);
-  };
+
+      setNewTransformation(transformationType.config);
+
+      return onChangeField(value);
+    },
+    [transformationType.config]
+  );
+
+  // Stable debounced function — created once, never recreated on re-render
+  const debouncedSetTransformation = useRef(
+    debounce(
+      (fieldName: string, value: string, transformType: string) => {
+        setNewTransformation((prevState: any) => ({
+          ...prevState,
+          [transformType]: {
+            ...prevState?.[transformType],
+            [fieldName === "prompt" ? "prompt" : "to"]: value,
+          },
+        }));
+      },
+      1000
+    )
+  ).current;
+
+  const onInputChangeHandler = useCallback(
+    (
+      fieldName: string,
+      value: string,
+      transformType: string,
+      onChangeField: (value: string) => void
+    ) => {
+      // Update the form field immediately (no debounce — feels instant)
+      onChangeField(value);
+      // Debounce the state update that triggers transformation (1s delay)
+      debouncedSetTransformation(fieldName, value, transformType);
+    },
+    [debouncedSetTransformation]
+  );
 
   const onTransformHandler = async () => {
     setIsTransforming(true);
@@ -202,10 +216,10 @@ const TransformationForm = ({
   };
 
   useEffect(() => {
-    if(image && (type === 'restore' || type === 'removeBackground')) {
-      setNewTransformation(transformationType.config)
+    if (image && (type === "restore" || type === "removeBackground")) {
+      setNewTransformation(transformationType.config);
     }
-  }, [image, transformationType.config, type])
+  }, [image, transformationType.config, type]);
 
   return (
     <Form {...form}>

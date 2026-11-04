@@ -8,6 +8,14 @@ import Image from "../database/models/image.model";
 import { redirect } from "next/navigation";
 import { v2 as cloudinary } from "cloudinary";
 
+// Configure once at module level — not on every function call
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
 const populateUser = (query: any) =>
   query.populate({
     path: "author",
@@ -105,52 +113,35 @@ export async function getAllImages({
   try {
     await connectToDatabase();
 
-    cloudinary.config({
-      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-      secure: true
-    });
+    let query = {};
 
-    let expression = 'folder=pixelgenie'
-
-    if(searchQuery){
-      expression += ` AND ${searchQuery}`
-    }
-
-    const {resources} = await cloudinary.search
-    .expression(expression)
-    .execute()
-
-    const resourceIds = resources.map((resource: any) => resource.public_id)
-
-    let query = {}
-
+    // Only hit the Cloudinary search API when there's an actual search term
     if (searchQuery) {
+      const { resources } = await cloudinary.search
+        .expression(`folder=pixelgenie AND ${searchQuery}`)
+        .execute();
+
+      const resourceIds = resources.map((resource: any) => resource.public_id);
+
       query = {
-        publicId: {
-          $in: resourceIds
-        }
-      }
+        publicId: { $in: resourceIds },
+      };
     }
 
-    const skipAmount = (Number(page) -1) * limit
+    const skipAmount = (Number(page) - 1) * limit;
 
-    const images = await populateUser(Image.find(query))
-    .sort({updatedAt: -1})
-    .skip(skipAmount)
-    .limit(limit)
-
-    const totalImages = await Image.find(query).countDocuments()
-
-    const savedImages = await Image.find().countDocuments()
+    // Run both count queries in parallel instead of sequentially
+    const [images, totalImages, savedImages] = await Promise.all([
+      populateUser(Image.find(query)).sort({ updatedAt: -1 }).skip(skipAmount).limit(limit),
+      Image.countDocuments(query),
+      Image.countDocuments(),
+    ]);
 
     return {
       data: JSON.parse(JSON.stringify(images)),
       totalPage: Math.ceil(totalImages / limit),
-      savedImages
-    }
-
+      savedImages,
+    };
   } catch (error) {
     handleError(error);
   }
@@ -171,12 +162,14 @@ export async function getUserImages({
 
     const skipAmount = (Number(page) - 1) * limit;
 
-    const images = await populateUser(Image.find({ author: userId }))
-      .sort({ updatedAt: -1 })
-      .skip(skipAmount)
-      .limit(limit);
-
-    const totalImages = await Image.find({ author: userId }).countDocuments();
+    // Run both queries in parallel
+    const [images, totalImages] = await Promise.all([
+      populateUser(Image.find({ author: userId }))
+        .sort({ updatedAt: -1 })
+        .skip(skipAmount)
+        .limit(limit),
+      Image.countDocuments({ author: userId }),
+    ]);
 
     return {
       data: JSON.parse(JSON.stringify(images)),

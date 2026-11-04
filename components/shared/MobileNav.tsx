@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
@@ -11,6 +11,7 @@ import { navLinks } from "../../constants";
 
 function MobileNav() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="header">
@@ -20,6 +21,8 @@ function MobileNav() {
           alt="logo"
           width={180}
           height={28}
+          loading="eager"
+          priority
         />
       </Link>
 
@@ -27,20 +30,26 @@ function MobileNav() {
         <SignedIn>
           <UserButton afterSignOutUrl="/" />
 
-          <Sheet>
-            <SheetTrigger>
-              <Image
-                src="/assets/icons/menu.svg"
-                alt="menu"
-                width={32}
-                height={32}
-                className="cursor-pointer"
-              />
+          {/* Controlled Sheet — closes instantly when a nav link is tapped */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <button aria-label="Open menu">
+                <Image
+                  src="/assets/icons/menu.svg"
+                  alt="menu"
+                  width={32}
+                  height={32}
+                  className="cursor-pointer"
+                />
+              </button>
             </SheetTrigger>
             <SheetContent className="sheet-content sm:w-64">
               <>
-
-                <Link href="/" className="sidebar-logo">
+                <Link
+                  href="/"
+                  className="sidebar-logo"
+                  onClick={() => setOpen(false)}
+                >
                   <Image
                     src="/assets/images/logo-text.svg"
                     alt="logo"
@@ -55,19 +64,21 @@ function MobileNav() {
 
                     return (
                       <li
-                        className={`${isActive && "bg-red-100 rounded-full w-full"
-                          } p-18 flex whitespace-nowrap text-gray-800`}
                         key={link.route}
+                        className={`${
+                          isActive ? "bg-red-100 rounded-full w-full" : ""
+                        } p-18 flex whitespace-nowrap text-gray-800`}
                       >
+                        {/* onClick closes the Sheet immediately on tap */}
                         <Link
                           className="sidebar-link cursor-pointer"
                           href={link.route}
+                          onClick={() => setOpen(false)}
                         >
                           <Image
-                            className={`${isActive && "brightness-50"
-                              } `}
+                            className={isActive ? "brightness-50" : ""}
                             src={link.icon}
-                            alt="logo"
+                            alt={link.label}
                             width={24}
                             height={24}
                           />
@@ -84,7 +95,10 @@ function MobileNav() {
 
         {/* signed out */}
         <SignedOut>
-          <Button asChild className="button transition hover:duration-500 ease-in-out bg-red-100 hover:bg-red-200  text-gray-800">
+          <Button
+            asChild
+            className="button transition duration-300 ease-in-out bg-red-100 hover:bg-red-200 text-gray-800"
+          >
             <Link href="/sign-in">Login</Link>
           </Button>
         </SignedOut>

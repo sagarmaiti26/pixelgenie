@@ -20,20 +20,19 @@ export const Search = () => {
           key: "query",
           value: query,
         });
-
         router.push(newUrl, { scroll: false });
-      } else {
+      } else if (searchParams.has("query")) {
+        // Only remove the param if it was actually set — avoids a redundant push
         const newUrl = removeKeysFromQuery({
           searchParams: searchParams.toString(),
           keysToRemove: ["query"],
         });
-
         router.push(newUrl, { scroll: false });
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [router, searchParams, query]);
+  }, [query]); // ← only re-run when the user's typed query changes
 
   return (
     <div className="search">
@@ -48,6 +47,7 @@ export const Search = () => {
         className="search-field"
         placeholder="Search"
         onChange={(e) => setQuery(e.target.value)}
+        value={query}
       />
     </div>
   );

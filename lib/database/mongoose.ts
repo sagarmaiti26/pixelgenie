@@ -17,18 +17,26 @@ if (!cached) {
 }
 
 export const connectToDatabase = async () => {
+  // Return cached connection if available
   if (cached.conn) return cached.conn;
 
-  if (!MONGODB_URL) throw new Error("Missing MOGODB_URL");
+  if (!MONGODB_URL) throw new Error("Missing MONGODB_URL");
 
-  cached.promise =
-    cached.promise ||
-    mongoose.connect(MONGODB_URL, {
+  // Reuse an in-flight promise to avoid duplicate connections
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URL, {
       dbName: "pixelgenie",
       bufferCommands: false,
     });
+  }
 
-    cached.conn = await cached.promise
+  try {
+    cached.conn = await cached.promise;
+  } catch (error) {
+    // Reset the promise so the next request gets a fresh connection attempt
+    cached.promise = null;
+    throw error;
+  }
 
-    return cached.conn
+  return cached.conn;
 };
