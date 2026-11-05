@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 
-import { Button } from "../ui/button";
+import { Loader2, Trash2 } from "lucide-react";
 import { deleteImage } from "../../lib/actions/image.actions";
 
 export const DeleteConfirmation = ({ imageId }: { imageId: string }) => {
@@ -22,17 +22,13 @@ export const DeleteConfirmation = ({ imageId }: { imageId: string }) => {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild className="w-full rounded-full">
-        <Button
-          type="button"
-          className="button h-[44px] w-full md:h-[54px]"
-          variant="destructive"
-        >
-          Delete Image
-        </Button>
+      <AlertDialogTrigger asChild>
+        <button type="button" className="btn-danger h-[50px] w-full md:h-[54px]">
+          <Trash2 className="size-5" /> Delete Image
+        </button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="flex flex-col gap-10">
+      <AlertDialogContent className="flex flex-col gap-8 rounded-3xl">
         <AlertDialogHeader>
           <AlertDialogTitle>
             Are you sure you want to delete this image?
@@ -43,16 +39,25 @@ export const DeleteConfirmation = ({ imageId }: { imageId: string }) => {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="btn-secondary h-11 rounded-full px-6">
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
-            className="border bg-red-500 text-white hover:bg-red-600"
+            disabled={isPending}
+            className="btn-base h-11 rounded-full bg-rose-500 px-6 text-white hover:bg-rose-600"
             onClick={() =>
               startTransition(async () => {
                 await deleteImage(imageId);
               })
             }
           >
-            {isPending ? "Deleting..." : "Delete"}
+            {isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" /> Deleting…
+              </>
+            ) : (
+              "Delete"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

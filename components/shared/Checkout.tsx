@@ -5,7 +5,8 @@ import { useEffect } from "react";
 
 
 
-import { Button } from "../ui/button";
+import { useFormStatus } from "react-dom";
+import { Loader2 } from "lucide-react";
 import { useToast } from "../ui/use-toast";
 import { checkoutCredits } from "../../lib/actions/transaction.action";
 
@@ -61,17 +62,27 @@ const Checkout = ({
 
   return (
     <form action={onCheckout} method="POST">
-      <section>
-        <Button
-          type="submit"
-          role="link"
-          className="w-full rounded-full text-red-400 hover:text-red-500 gray-500 bg-red-100 hover:bg-red-200 bg-cover transition hover:duration-500 ease-in-out"
-        >
-          Buy Credit
-        </Button>
-      </section>
+      <CheckoutButton />
     </form>
   );
 };
 
 export default Checkout;
+
+// Shows a spinner while the server action creates the Stripe session,
+// so the click gives instant feedback instead of appearing frozen.
+const CheckoutButton = () => {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" role="link" disabled={pending} className="btn-primary h-12 w-full">
+      {pending ? (
+        <>
+          <Loader2 className="size-5 animate-spin" /> Redirecting…
+        </>
+      ) : (
+        "Buy Credits"
+      )}
+    </button>
+  );
+};

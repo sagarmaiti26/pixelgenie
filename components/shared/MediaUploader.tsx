@@ -64,11 +64,11 @@ const MediaUploader = ({
     >
       {({ open }) => (
         <div className="flex flex-col gap-4">
-          <h3 className="h3-bold text-gray-800">Original</h3>
+          <h3 className="h3-bold text-slate-900">Original</h3>
 
           {publicId ? (
             <>
-              <div className="cursor-pointer overflow-hidden rounded-[10px]">
+              <div className="cursor-pointer overflow-hidden rounded-2xl">
                 <CldImage
                   width={getImageSize(type, image, "width")}
                   height={getImageSize(type, image, "height")}
@@ -81,17 +81,23 @@ const MediaUploader = ({
               </div>
             </>
           ) : (
-            <div className="media-uploader_cta" onClick={() => open()}>
+            <button
+              type="button"
+              className="media-uploader_cta group"
+              onClick={() => open()}
+            >
               <div className="media-uploader_cta-image">
                 <Image
                   src="/assets/icons/add.svg"
                   alt="Add Image"
-                  width={24}
-                  height={24}
+                  width={28}
+                  height={28}
                 />
               </div>
-              <p className="p-14-medium">Click here to upload image</p>
-            </div>
+              <p className="p-14-medium text-slate-500">
+                Click to upload an image
+              </p>
+            </button>
           )}
         </div>
       )}

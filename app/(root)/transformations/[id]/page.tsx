@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Button } from "../../../../components/ui/button";
 import { getImageById } from "../../../../lib/actions/image.actions";
 import { getImageSize } from "../../../../lib/utils";
 
@@ -20,56 +19,34 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
     <>
       <Header title={image.title} />
 
-      <section className="mt-5 flex flex-wrap gap-4">
-        <div className="p-14-medium md:p-16-medium flex gap-2">
-          <p className="text-gray-800">Transformation:</p>
-          <p className=" capitalize text-red-400">
-            {image.transformationType}
-          </p>
-        </div>
-
-        {image.prompt && (
-          <>
-            <p className="hidden text-dark-400/50 md:block">&#x25CF;</p>
-            <div className="p-14-medium md:p-16-medium flex gap-2 ">
-              <p className="text-gray-800">Prompt:</p>
-              <p className=" capitalize text-red-400">{image.prompt}</p>
+      <section className="mt-5 flex flex-wrap gap-3">
+        {[
+          { label: "Transformation", value: image.transformationType },
+          { label: "Prompt", value: image.prompt },
+          { label: "Color", value: image.color },
+          { label: "Aspect Ratio", value: image.aspectRatio },
+        ]
+          .filter((item) => item.value)
+          .map((item) => (
+            <div key={item.label} className="meta-chip">
+              <span className="text-slate-500">{item.label}</span>
+              <span className="capitalize text-brand-600">{item.value}</span>
             </div>
-          </>
-        )}
-
-        {image.color && (
-          <>
-            <p className="hidden text-dark-400/50 md:block">&#x25CF;</p>
-            <div className="p-14-medium md:p-16-medium flex gap-2">
-              <p className="text-dark-600">Color:</p>
-              <p className=" capitalize text-red-400">{image.color}</p>
-            </div>
-          </>
-        )}
-
-        {image.aspectRatio && (
-          <>
-            <p className="hidden text-dark-400/50 md:block">&#x25CF;</p>
-            <div className="p-14-medium md:p-16-medium flex gap-2">
-              <p className="text-dark-600">Aspect Ratio:</p>
-              <p className=" capitalize text-red-400">{image.aspectRatio}</p>
-            </div>
-          </>
-        )}
+          ))}
       </section>
 
-      <section className="mt-10 border-t border-dark-400/15">
+      <section className="mt-10 border-t border-slate-200">
         <div className="transformation-grid">
           {/* MEDIA UPLOADER */}
           <div className="flex flex-col gap-4">
-            <h3 className="h3-bold text-gray-900">Original</h3>
+            <h3 className="h3-bold text-slate-900">Original</h3>
 
             <Image
               width={getImageSize(image.transformationType, image, "width")}
               height={getImageSize(image.transformationType, image, "height")}
               src={image.secureURL}
-              alt="image"
+              alt={image.title}
+              priority
               className="transformation-original_image"
             />
           </div>
@@ -87,11 +64,12 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
 
         {userId === image.author.clerkId && (
           <div className="mt-4 space-y-4">
-            <Button asChild type="button" className="submit-button capitalize">
-              <Link href={`/transformations/${image._id}/update`}>
-                Update Image
-              </Link>
-            </Button>
+            <Link
+              href={`/transformations/${image._id}/update`}
+              className="submit-button"
+            >
+              Update Image
+            </Link>
 
             <DeleteConfirmation imageId={image._id} />
           </div>

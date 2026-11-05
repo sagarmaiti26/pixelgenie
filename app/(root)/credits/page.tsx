@@ -3,7 +3,7 @@ import {auth} from "@clerk/nextjs/server";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { plans } from "../../../constants";
-import { Button } from "../../../components/ui/button";
+import { cn } from "../../../lib/utils";
 import Header from "../../../components/shared/Header";
 import { getUserById } from "../../../lib/actions/user.actions";
 import Checkout from "../../../components/shared/Checkout";
@@ -27,18 +27,33 @@ const Credits = async () => {
       <section>
         <ul className="credits-list">
           {plans.map((plan) => (
-            <li key={plan.name} className="credits-item">
+            <li
+              key={plan.name}
+              className={cn(
+                "credits-item",
+                plan.name === "Pro Package" && "credits-item_featured"
+              )}
+            >
+              {plan.name === "Pro Package" && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-brand-cyan to-brand-pink px-3 py-1 text-xs font-semibold text-white shadow-glow">
+                  Most popular
+                </span>
+              )}
               <div className="flex-center flex-col gap-3">
-                <Image src={plan.icon} alt="check" width={50} height={50} />
-                <p className="p-20-semibold mt-2 text-rose-400">
-                  {plan.name}
+                <span className="stat-icon size-14">
+                  <Image src={plan.icon} alt="" width={32} height={32} />
+                </span>
+                <p className="p-18-semibold mt-2 text-gradient">{plan.name}</p>
+                <p className="h1-semibold font-bold text-slate-900">
+                  ₹{plan.price}
                 </p>
-                <p className="h1-semibold text-gray-900">₹{plan.price}</p>
-                <p className="p-16-regular">{plan.credits} Credits</p>
+                <p className="p-16-regular text-slate-500">
+                  {plan.credits} Credits
+                </p>
               </div>
 
               {/* Inclusions */}
-              <ul className="flex flex-col gap-5 py-9">
+              <ul className="flex flex-1 flex-col gap-4 py-9">
                 {plan.inclusions.map((inclusion) => (
                   <li
                     key={plan.name + inclusion.label}
@@ -48,19 +63,26 @@ const Credits = async () => {
                       src={`/assets/icons/${
                         inclusion.isIncluded ? "check.svg" : "cross.svg"
                       }`}
-                      alt="check"
-                      width={24}
-                      height={24}
+                      alt={inclusion.isIncluded ? "Included" : "Not included"}
+                      width={22}
+                      height={22}
                     />
-                    <p className="p-16-regular">{inclusion.label}</p>
+                    <p
+                      className={cn(
+                        "p-16-regular",
+                        inclusion.isIncluded ? "text-slate-700" : "text-slate-400"
+                      )}
+                    >
+                      {inclusion.label}
+                    </p>
                   </li>
                 ))}
               </ul>
 
               {plan.name === "Free" ? (
-                <Button variant="outline" className="credits-btn ">
+                <button type="button" className="credits-btn" disabled>
                   Free Consumable
-                </Button>
+                </button>
               ) : (
                 <SignedIn>
                   <Checkout

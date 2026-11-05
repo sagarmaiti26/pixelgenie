@@ -30,6 +30,25 @@ module.exports = {
           500: "#7857FF",
           600: "#4318FF",
         },
+        // Brand palette sampled from logo-text.svg: cyan → royal blue → rose, peach accent
+        brand: {
+          50: "#EEF3FF",
+          100: "#DEE7FF",
+          200: "#C2D2FE",
+          300: "#9BB3FB",
+          400: "#6C88F2",
+          500: "#4864E4",
+          600: "#3651D4",
+          700: "#2A3FB0",
+          900: "#1A2466",
+          cyan: "#0894D6",
+          sky: "#51CEFE",
+          "sky-tint": "#E4F6FE",
+          pink: "#E8708F",
+          rose: "#FE94A2",
+          "rose-tint": "#FFEBEE",
+          peach: "#FFB297",
+        },
         dark: {
           400: "#7986AC",
           500: "#606C80",
@@ -70,7 +89,6 @@ module.exports = {
       },
       backgroundImage: {
         "purple-gradient": "url('/assets/images/gradient-bg.svg')",
-        banner: "url('/assets/images/banner-bg.png')",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -86,10 +104,34 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(12px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        float: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(-24px, 18px) scale(1.08)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        shimmer: "shimmer 1.6s infinite",
+        "fade-up": "fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "fade-in": "fade-in 0.3s ease-out both",
+        float: "float 9s ease-in-out infinite",
+      },
+      boxShadow: {
+        glow: "0 10px 30px -10px rgba(54, 81, 212, 0.5)",
+        "glow-lg": "0 18px 40px -12px rgba(232, 112, 143, 0.5)",
+        soft: "0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px -8px rgba(16, 24, 40, 0.08)",
       },
     },
   },

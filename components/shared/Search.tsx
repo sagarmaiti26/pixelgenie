@@ -5,47 +5,47 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Input } from "../ui/input";
-import { formUrlQuery, removeKeysFromQuery } from "../../lib/utils";
 
 export const Search = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState("");
+  // Seed from the URL so a reload / shared link keeps its search term
+  const [query, setQuery] = useState(searchParams.get("query") ?? "");
 
   useEffect(() => {
+    const current = searchParams.get("query") ?? "";
+    if (query === current) return;
+
     const delayDebounceFn = setTimeout(() => {
-      if (query) {
-        const newUrl = formUrlQuery({
-          searchParams: searchParams.toString(),
-          key: "query",
-          value: query,
-        });
-        router.push(newUrl, { scroll: false });
-      } else if (searchParams.has("query")) {
-        // Only remove the param if it was actually set — avoids a redundant push
-        const newUrl = removeKeysFromQuery({
-          searchParams: searchParams.toString(),
-          keysToRemove: ["query"],
-        });
-        router.push(newUrl, { scroll: false });
-      }
-    }, 300);
+      const params = new URLSearchParams(searchParams.toString());
+      // A new search should always start from page 1
+      params.delete("page");
+      if (query) params.set("query", query);
+      else params.delete("query");
+
+      const qs = params.toString();
+      const newUrl = `${window.location.pathname}${qs ? `?${qs}` : ""}`;
+
+      router.replace(newUrl, { scroll: false });
+    }, 350);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [query]); // ← only re-run when the user's typed query changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   return (
     <div className="search">
       <Image
         src="/assets/icons/search.svg"
-        alt="search"
-        width={24}
-        height={24}
+        alt=""
+        width={22}
+        height={22}
+        className="opacity-70"
       />
 
       <Input
         className="search-field"
-        placeholder="Search"
+        placeholder="Search your edits…"
         onChange={(e) => setQuery(e.target.value)}
         value={query}
       />

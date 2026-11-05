@@ -3,35 +3,53 @@
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
 import { navLinks } from "../../constants";
+import { cn } from "../../lib/utils";
 
-// Memoized nav item — only re-renders when isActive actually changes
+const PILL_TRANSITION = { type: "spring", stiffness: 380, damping: 32 } as const;
+
 const NavItem = memo(
   ({
     link,
     isActive,
+    onNavigate,
   }: {
     link: { route: string; icon: string; label: string };
     isActive: boolean;
+    onNavigate: (route: string) => void;
   }) => (
-    <li
-      className={`sidebar-nav_element group ${
-        isActive ? "bg-red-100 text-gray-800" : "text-gray-600"
-      }`}
-    >
-      <Link className="sidebar-link" href={link.route}>
+    <li className="sidebar-nav_element">
+      {isActive && (
+        <motion.span
+          layoutId="sidebar-active-pill"
+          transition={PILL_TRANSITION}
+          className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan via-brand-600 to-brand-pink shadow-glow"
+        />
+      )}
+      <Link
+        className={cn(
+          "sidebar-link group",
+          isActive
+            ? "text-white"
+            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+        )}
+        href={link.route}
+        onClick={() => onNavigate(link.route)}
+      >
         <Image
           src={link.icon}
-          alt={link.label}
-          width={24}
-          height={24}
-          // Sidebar icons are always visible — load them eagerly
+          alt=""
+          width={22}
+          height={22}
           priority
-          className={isActive ? "brightness-50" : ""}
+          className={cn(
+            "transition-transform duration-200 group-hover:scale-110",
+            isActive && "icon-white"
+          )}
         />
         {link.label}
       </Link>
@@ -42,14 +60,23 @@ NavItem.displayName = "NavItem";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  // Optimistic route: highlight the clicked item immediately instead of
+  // waiting for the server to finish rendering the next page.
+  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingRoute(null);
+  }, [pathname]);
+
+  const activeRoute = pendingRoute ?? pathname;
 
   return (
     <aside className="sidebar">
-      <div className="flex size-full flex-col gap-4">
-        <Link href="/" className="sidebar-logo">
+      <div className="flex size-full flex-col gap-6">
+        <Link href="/" className="sidebar-logo" onClick={() => setPendingRoute("/")}>
           <Image
             src="/assets/images/logo-text.svg"
-            alt="logo"
+            alt="PixelGenie"
             width={180}
             height={28}
             priority
@@ -63,7 +90,8 @@ const Sidebar = () => {
                 <NavItem
                   key={link.route}
                   link={link}
-                  isActive={link.route === pathname}
+                  isActive={link.route === activeRoute}
+                  onNavigate={setPendingRoute}
                 />
               ))}
             </ul>
@@ -73,23 +101,20 @@ const Sidebar = () => {
                 <NavItem
                   key={link.route}
                   link={link}
-                  isActive={link.route === pathname}
+                  isActive={link.route === activeRoute}
+                  onNavigate={setPendingRoute}
                 />
               ))}
-              <li className="flex-center cursor-pointer gap-2 p-4">
+              <li className="mt-2 flex w-full items-center gap-2 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm">
                 <UserButton afterSignOutUrl="/" showName />
               </li>
             </ul>
           </SignedIn>
 
-          {/* signed out */}
           <SignedOut>
-            <Button
-              asChild
-              className="button transition duration-300 ease-in-out bg-red-100 hover:bg-red-200 text-gray-800"
-            >
-              <Link href="/sign-in">Login</Link>
-            </Button>
+            <Link href="/sign-in" className="btn-primary h-12 w-full px-6">
+              Login
+            </Link>
           </SignedOut>
         </nav>
       </div>

@@ -34,17 +34,12 @@ const TransformedImage = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex-between">
-        <h3 className="h3-bold text-gray-800">Transformed</h3>
+        <h3 className="h3-bold text-slate-900">Transformed</h3>
 
         {hasDownload && (
           <button className="download-btn" onClick={dowloadHandler}>
-            <Image
-              src="/assets/icons/download.svg"
-              alt="Download"
-              width={24}
-              height={24}
-              className="pb-[6px]"
-            />
+            <Image src="/assets/icons/download.svg" alt="" width={18} height={18} />
+            Download
           </button>
         )}
       </div>
@@ -76,14 +71,17 @@ const TransformedImage = ({
                 src="/assets/icons/spinner.svg"
                 width={50}
                 height={50}
-                alt="spinner"
+                alt=""
               />
-              <p className="text-white/80">Please wait...</p>
+              <p className="p-14-medium text-white/90">Applying magic…</p>
             </div>
           )}
         </div>
       ) : (
-        <div className="transformed-placeholder">Transformed Image</div>
+        <div className="transformed-placeholder">
+          <Image src="/assets/icons/stars.svg" alt="" width={28} height={28} className="opacity-60" />
+          Your transformed image will appear here
+        </div>
       )}
     </div>
   );

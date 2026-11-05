@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "../ui/select";
 
-import { Button } from "../ui/button";
+import { Loader2, Sparkles } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -338,22 +338,36 @@ const TransformationForm = ({
         </div>
 
         <div className="flex flex-col gap-4">
-          <Button
+          <button
             type="button"
-            className="submit-button capitalize"
+            className="submit-button-secondary"
             disabled={isTransforming || newTransformation === null}
             onClick={onTransformHandler}
           >
-            {isTransforming ? "Transforming..." : "Apply transformation"}
-          </Button>
+            {isTransforming ? (
+              <>
+                <Loader2 className="size-5 animate-spin" /> Transforming…
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-5" /> Apply Transformation
+              </>
+            )}
+          </button>
 
-          <Button
+          <button
             type="submit"
-            className="submit-button capitalize"
+            className="submit-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Save Image"}
-          </Button>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="size-5 animate-spin" /> Saving…
+              </>
+            ) : (
+              "Save Image"
+            )}
+          </button>
         </div>
       </form>
     </Form>
